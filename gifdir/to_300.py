@@ -65,8 +65,8 @@ def processImage(path):
                 new_frame.paste(last_frame)
             
             new_frame.paste(im, (0,0), im.convert('RGBA'))
-            new_frame.save('%s-%d.png' % (''.join(os.path.basename(path).split('.')[:-1]), i), 'PNG')
-            image_list.append(('%s-%d.png' % (''.join(os.path.basename(path).split('.')[:-1]), i)));
+            # new_frame.save('%s-%d.png' % (''.join(os.path.basename(path).split('.')[:-1]), i), 'PNG')
+            image_list.append(new_frame);
  
             i += 1
             last_frame = new_frame
@@ -78,7 +78,6 @@ def processImage(path):
 
 def get_new_list(before_list, num):
     before_list_length = len(before_list);
-
     # 如果总帧数列表不超过限制的帧数,则直接返回
     if(before_list_length<=num):
       return before_list;
@@ -88,16 +87,32 @@ def get_new_list(before_list, num):
       after_list = [];
       # 取gif帧的间隔
       gap = len(before_list) // num + 1;
+      # 移除帧的列表
+      remove_frame_list = [];
+      # 移除帧列表的最大长度
+      remove_frame_list_max_length = len(before_list) - 300;
       for (f_index, f_value) in enumerate(before_list):
-        if(f_index % gap == 0):
+        # 如果移除帧的列表 数量不够
+        if(len(remove_frame_list) < remove_frame_list_max_length):
+          if(f_index % gap != 0):
+            remove_frame_list.append(f_index)
+
+
+
+      for (f_index, f_value) in enumerate(before_list):
+        print("before_list_len::", len(before_list));
+        if(f_index not in remove_frame_list):
           after_list.append(f_value)
+        print("after_list_len::", len(after_list));
+      ## 为保证更高的流畅性, 如果帧数小于预期帧数, 则补齐
+      
       return after_list
 
 
 def create_gif(image_list, gif_name):
     frames = []
     for image_name in image_list:
-        frames.append(imageio.imread(image_name))
+        frames.append(image_name)
     # Save them as frames into a gif 
     imageio.mimsave(gif_name, frames, 'GIF', duration = 0.1)
     return
@@ -127,9 +142,9 @@ def main():
       # 对数组进行瘦身
       new_image_list = get_new_list(image_list, 30)
       create_gif(new_image_list, new_gif_name);
-      # 删除生成的临时静态图片
-      for image_path in image_list: 
-          os.remove(image_path);
+      # # 删除生成的临时静态图片
+      # for image_path in image_list: 
+      #     os.remove(image_path);
 
 
  
