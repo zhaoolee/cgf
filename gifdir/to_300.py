@@ -76,7 +76,7 @@ def processImage(path):
 
     return image_list;
 
-def get_new_list(before_list, num):
+def get_new_list_2(before_list, num):
     before_list_length = len(before_list);
     # 如果总帧数列表不超过限制的帧数,则直接返回
     if(before_list_length<=num):
@@ -107,6 +107,65 @@ def get_new_list(before_list, num):
       ## 为保证更高的流畅性, 如果帧数小于预期帧数, 则补齐
       
       return after_list
+
+# 新的抽取帧的函数
+def get_new_list(num_list, n):
+    if(n == 0):
+      # print(num_list);
+      return num_list
+
+    if(len(num_list)<=n):
+      # print(num_list);
+      return num_list
+
+    before_n = n;
+    m = len(num_list)
+    # n必须小于num_list的一半
+    if(n > (m / 2)):
+      n = m - n
+    # t是分组
+    t = m // n + 1
+    # 生成包含n个数组的数组n_len_list
+    n_len_list = [];
+    for nn in range(n):
+        n_len_list.append([])
+    tmp_num_list = list(num_list)
+    while (len(tmp_num_list) > 0):
+      for nl in n_len_list:
+        if(len(tmp_num_list) > 0):
+          nl.append(tmp_num_list[0])
+          tmp_num_list = tmp_num_list[1:]
+        else:
+          pass
+
+
+    # 拷贝一份数组
+    tmp_n_len_list = list(n_len_list)
+    tmp_num_list = list(num_list)
+
+    # 构建新的二维数组
+    for (tmp_m_index, tmp_m_value) in enumerate(tmp_n_len_list):
+      for (tmp_n_index, tmp_n_value) in enumerate(tmp_m_value):
+        tmp_n_len_list[tmp_m_index][tmp_n_index] = tmp_num_list[0]
+        tmp_num_list = tmp_num_list[1:]
+        
+        
+
+    # 生成一长一短两个列表
+    long_list = []
+    short_list = []
+
+    for n_len_atom in n_len_list:
+      short_list = short_list + [n_len_atom[0]]
+      long_list = long_list + n_len_atom[1:]
+
+    if(len(long_list) == before_n):
+      print(long_list)
+      return long_list
+    if(len(short_list) == before_n):
+      print(short_list)
+      return short_list
+
 
 
 def create_gif(image_list, gif_name):
@@ -140,7 +199,7 @@ def main():
       new_gif_name = 'new_'+ gif_value.split("/")[-1]
       new_image_list = [];
       # 对数组进行瘦身
-      new_image_list = get_new_list(image_list, 30)
+      new_image_list = get_new_list(image_list, 300)
       create_gif(new_image_list, new_gif_name);
       # # 删除生成的临时静态图片
       # for image_path in image_list: 
